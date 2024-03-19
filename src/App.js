@@ -8,11 +8,6 @@ import {
   TableRow,
   TableSortLabel,
   TablePagination,
-  Select,
-  MenuItem,
-  InputLabel,
-  FormControl,
-  makeStyles,
   TextField,
   IconButton,
 } from "@material-ui/core";
@@ -25,28 +20,11 @@ import {
 } from "@material-ui/icons";
 import _ from "lodash";
 
-const useStyles = makeStyles({
-  table: {
-    minWidth: 650,
-  },
-  filterContainer: {
-    display: "flex",
-    justifyContent: "flex-end",
-    alignItems: "center",
-    marginBottom: "1rem",
-  },
-  filterItem: {
-    marginLeft: "1rem",
-  },
-});
-
 const TableComponent = ({ data }) => {
-  const classes = useStyles();
   const [order, setOrder] = useState("asc");
-  const [orderBy, setOrderBy] = useState("name");
+  const [orderBy, setOrderBy] = useState("id");
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedFilters, setSelectedFilters] = useState({});
-  const [priceRange, setPriceRange] = useState([0, 1000]);
   const [debouncedSearchTerm] = useDebounce(searchTerm, 500);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -59,13 +37,6 @@ const TableComponent = ({ data }) => {
 
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
-  };
-
-  const handleFilterChange = (property, value) => {
-    setSelectedFilters((prevFilters) => ({
-      ...prevFilters,
-      [property]: value,
-    }));
   };
 
   const handlePageChange = (event, newPage) => {
@@ -94,12 +65,24 @@ const TableComponent = ({ data }) => {
   const paginatedData = _.slice(
     sortedData,
     page * rowsPerPage,
-    page * rowsPerPage + rowsPerPage
+    page * rowsPerPage + rowsPerPage,
   );
+
+  const formatDate = (dateString) => {
+    const options = {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    };
+    return new Date(dateString).toLocaleString("en-US", options);
+  };
 
   return (
     <div>
-      <div className={classes.filterContainer}>
+      <div>
         <TextField
           label="Search"
           value={searchTerm}
@@ -120,7 +103,7 @@ const TableComponent = ({ data }) => {
         </IconButton>
       </div>
       <TableContainer>
-        <Table className={classes.table}>
+        <Table>
           <TableHead>
             <TableRow>
               <TableCell>
@@ -197,7 +180,6 @@ const TableComponent = ({ data }) => {
               </TableCell>
             </TableRow>
           </TableHead>
-
           <TableBody>
             {paginatedData.map((row) => (
               <TableRow key={row.id}>
@@ -205,8 +187,8 @@ const TableComponent = ({ data }) => {
                 <TableCell>{row.name}</TableCell>
                 <TableCell>{row.category}</TableCell>
                 <TableCell>{row.subcategory}</TableCell>
-                <TableCell>{row.createdAt}</TableCell>
-                <TableCell>{row.updatedAt}</TableCell>
+                <TableCell>{formatDate(row.createdAt)}</TableCell>
+                <TableCell>{formatDate(row.updatedAt)}</TableCell>
                 <TableCell>{row.price}</TableCell>
                 <TableCell>{row.sale_price}</TableCell>
               </TableRow>
