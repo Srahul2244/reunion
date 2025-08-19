@@ -1,6 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import TableComponent from "./App";
+//Data//
 const data = [
   {
     id: 1,
